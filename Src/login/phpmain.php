@@ -1,14 +1,8 @@
 <?php
 header('Content-Type: application/json');
+session_start();
 
-// Configuración de la base de datos
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "cenda_testsoft";
-
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
+include("../../DB.php");
 
 // Verificar conexión
 if ($conn->connect_error) {
@@ -33,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Verificar la contraseña
         if (password_verify($contraseña, $hashed_password)) {
+            $_SESSION['documentoAdmin'] = $documento;
             echo json_encode(['status' => 'success', 'message' => 'Inicio de sesión exitoso.']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Contraseña incorrecta.']);

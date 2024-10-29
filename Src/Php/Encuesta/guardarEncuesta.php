@@ -3,6 +3,12 @@ ob_start();
 session_start();
 include("../../../DB.php");
 
+//Validar documento de la sesion iniciada
+if (isset($_SESSION['documentoAdmin'])) {
+    $documento = $_SESSION['documentoAdmin'];
+    
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recuperar datos del formulario
     $nombre = mysqli_real_escape_string($conn, $_POST['nombre']);
@@ -11,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sede = mysqli_real_escape_string($conn, $_POST['sede']);
     $atencion = mysqli_real_escape_string($conn, $_POST['atencion']);
     $comentarios = mysqli_real_escape_string($conn, $_POST['comentarios']);
+    $idAdministrador = $documento;
 
     // Establecer la zona horaria a Suramérica / Bogotá
     date_default_timezone_set('America/Bogota');
@@ -36,13 +43,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Consulta parametrizada para insertar datos en la tabla 'encuesta'
-    $queryInsertEncuesta = "INSERT INTO encuesta (sede, fecha, hora, respuesta, porcentaje, nombreCliente, numeroCliente, placaCliente, comentario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $queryInsertEncuesta = "INSERT INTO encuesta (sede, fecha, hora, respuesta, porcentaje, nombreCliente, numeroCliente, placaCliente, comentario, idAdministrador) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Preparar la consulta
     $stmt = mysqli_prepare($conn, $queryInsertEncuesta);
 
     // Vincular los parámetros
-    mysqli_stmt_bind_param($stmt, "ssssdssss", $sede, $fechaActual, $horaActual, $atencion, $porcentaje, $nombre, $celular, $placa, $comentarios);
+    mysqli_stmt_bind_param($stmt, "ssssdsssss", $sede, $fechaActual, $horaActual, $atencion, $porcentaje, $nombre, $celular, $placa, $comentarios, $idAdministrador);
 
     // Ejecutar la consulta
     $resultInsertEncuesta = mysqli_stmt_execute($stmt);

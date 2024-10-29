@@ -1,16 +1,10 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 
 <?php
-
-session_start(); 
-ob_start(); 
-
-
+session_start();
+ob_start();
 include('../../../DB.php');
-
 include("../../../security/security.php");
 ?>
 
