@@ -1,9 +1,12 @@
-<?php
-include('../../../DB.php');
-?>
-
 <!DOCTYPE html>
 <html lang="es">
+
+<?php
+session_start();
+ob_start();
+include('../../../DB.php');
+include("../../../security/security.php");
+?>
 
 <head>
     <meta charset="UTF-8">
