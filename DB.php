@@ -2,8 +2,8 @@
 
 $conn = mysqli_connect(
     'cenda.com.co',
-    'cenda_gestion',
+    'cenda_encuestas',
     'tt.290-0012',
-    'cenda_testSoft'
+    'cenda_soft_admin'
 );
 ?>
