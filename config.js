@@ -7,7 +7,7 @@ window.config = {
         // funcionariosService: 'https://api-funcionarios-admin-migracion-production.up.railway.app', // Base URL de funcionarios y gestión
 
 
-        funcionariosService: 'https://brunei-housewives-quad-divine.trycloudflare.com',
+        funcionariosService: 'https://ensure-cloudy-lots-ruling.trycloudflare.com',
         informesService: 'https://api-informes-rtm-production.up.railway.app',
     },
 
