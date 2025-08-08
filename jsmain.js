@@ -93,7 +93,7 @@ function obtenerUsuarioActual(token) {
             localStorage.setItem('roles', JSON.stringify(roles));
 
             // Validar si tiene rol necesario para continuar
-            const rolesValidos = ["Administrador", "Desarrollador", "Contador", "Director Técnico", "Inspector de Línea"];
+            const rolesValidos = ["Administrador", "Desarrollador", "Contador", "Director Técnico", "Inspector de Línea", "Cajero"];
             const tieneAcceso = roles.some(r => rolesValidos.includes(r));
 
             if (!tieneAcceso) {
