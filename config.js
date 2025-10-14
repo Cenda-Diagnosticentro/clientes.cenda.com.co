@@ -7,7 +7,7 @@ window.config = {
         // funcionariosService: 'https://api-funcionarios-admin-migracion-production.up.railway.app', // Base URL de funcionarios y gestión
 
 
-        funcionariosService: 'https://tuner-frequency-trembl-employees.trycloudflare.com',
+        funcionariosService: 'https://refuse-headphones-reporting-engagement.trycloudflare.com',
         informesService: 'https://api-informes-rtm-production.up.railway.app',
     },
 
