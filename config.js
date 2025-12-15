@@ -7,7 +7,7 @@ window.config = {
         // funcionariosService: 'https://api-funcionarios-admin-migracion-production.up.railway.app', // Base URL de funcionarios y gestión
 
 
-        funcionariosService: 'https://arm-pattern-framing-broadway.trycloudflare.com',
+        funcionariosService: 'https://wake-joe-desktop-fiction.trycloudflare.com',
         informesService: 'https://api-informes-rtm-production.up.railway.app',
     },
 
