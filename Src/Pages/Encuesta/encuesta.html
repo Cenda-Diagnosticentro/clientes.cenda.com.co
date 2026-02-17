@@ -6,18 +6,25 @@
     <title>Encuesta de Satisfacción</title>
 
     <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <!-- Bootstrap 4.3.1 -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../../../Assets/Css/Encuesta/style.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../../Assets/Css/Encuesta/style.css"/>
 
     <!-- Config + lógica JS -->
     <script src="../../../config.js"></script>
     <script src="../../../security/seguridad.js" defer></script>
     <script src="encuesta.js" defer></script>
     <script src="../../Php/Encuesta/guardarEncuesta.js" defer></script>
+
+    <!-- jsPDF (PDF contrato) -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+
+    <!-- NUEVOS scripts -->
+    <script src="firmaModal.js" defer></script>
+    <script src="pdfContrato.js" defer></script>
 </head>
 
 <body>
@@ -29,17 +36,18 @@
     <form id="formEncuesta">
         <div class="form-group">
             <label for="nombre">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" required autocomplete="off" />
+            <input type="text" class="form-control" id="nombre" required autocomplete="off"/>
         </div>
 
         <div class="form-group">
             <label for="celular">Número de Celular:</label>
-            <input type="tel" class="form-control" id="celular" required autocomplete="off" />
+            <input type="tel" class="form-control" id="celular" required autocomplete="off"/>
         </div>
 
         <div class="form-group">
             <label for="placa">Placa del Vehículo:</label>
-            <input type="text" class="form-control" id="placa" oninput="this.value = this.value.toUpperCase()" required autocomplete="off" />
+            <input type="text" class="form-control" id="placa"
+                   oninput="this.value = this.value.toUpperCase()" required autocomplete="off"/>
         </div>
 
         <div class="form-group">
@@ -52,14 +60,17 @@
         <div class="form-group text-center">
             <label>¿Cómo fue la atención recibida en general?</label>
             <div class="d-flex justify-content-around">
-                <button type="button" class="btn btn-success btn-lg btn-circle btn-opcion" onclick="seleccionarOpcion('excelente', 1)" id="btnExcelente">
-                    <img src="../../../Assets/Img/contento.png" alt="Excelente" width="40" />
+                <button type="button" class="btn btn-success btn-lg btn-circle btn-opcion"
+                        onclick="seleccionarOpcion('excelente', 1)" id="btnExcelente">
+                    <img src="../../../Assets/Img/contento.png" alt="Excelente" width="40"/>
                 </button>
-                <button type="button" class="btn btn-warning btn-lg btn-circle btn-opcion" onclick="seleccionarOpcion('serio', 0.5)" id="btnSerio">
-                    <img src="../../../Assets/Img/serio.png" alt="Regular" width="40" />
+                <button type="button" class="btn btn-warning btn-lg btn-circle btn-opcion"
+                        onclick="seleccionarOpcion('serio', 0.5)" id="btnSerio">
+                    <img src="../../../Assets/Img/serio.png" alt="Regular" width="40"/>
                 </button>
-                <button type="button" class="btn btn-danger btn-lg btn-circle btn-opcion" onclick="seleccionarOpcion('malo', 0)" id="btnMalo">
-                    <img src="../../../Assets/Img/infeliz.png" alt="Malo" width="40" />
+                <button type="button" class="btn btn-danger btn-lg btn-circle btn-opcion"
+                        onclick="seleccionarOpcion('malo', 0)" id="btnMalo">
+                    <img src="../../../Assets/Img/infeliz.png" alt="Malo" width="40"/>
                 </button>
             </div>
         </div>
@@ -74,13 +85,110 @@
             <p id="labelCalificacion" class="fw-bold"></p>
         </div>
 
-        <input type="hidden" id="atencion" />
+        <input type="hidden" id="atencion"/>
 
-        <button type="submit" class="btn btn-primary btn-block">Enviar Encuesta</button>
+        <!-- Campos ocultos para enviar firma/pdf si tu PHP lo recibe -->
+        <input type="hidden" id="firmaBase64Global" name="firmaBase64"/>
+        <input type="hidden" id="pdfBase64Global" name="pdfBase64"/>
+
+        <!-- Botón visible: abre el modal de firma -->
+        <button type="button" class="btn btn-primary btn-block" id="btnAbrirContrato">
+            Enviar Encuesta
+        </button>
+
+        <!-- Submit REAL oculto (para que tu encuesta.js siga funcionando igual) -->
+        <button type="submit" id="btnSubmitReal" style="display:none;"></button>
     </form>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- Modal Contrato + Firma -->
+<div class="modal fade" id="modalContrato" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Constancia de Entrega y Recibo del Vehículo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Datos del form principal (solo lectura) -->
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label><strong>Placa del vehículo</strong></label>
+                        <input type="text" class="form-control" id="firmaPlaca" readonly>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label><strong>Sede</strong></label>
+                        <input type="text" class="form-control" id="firmaSede" readonly>
+                    </div>
+                </div>
+
+                <!-- Texto del documento -->
+                <div class="border rounded p-3" style="max-height:260px; overflow:auto; background:#fafafa;">
+                    <p><strong>CONSTANCIA DE ENTREGA Y RECIBO DEL VEHÍCULO – REVISIÓN TÉCNICO MECÁNICA</strong></p>
+
+                    <p>
+                        Yo, <strong><span id="contratoNombre"></span></strong>, declaro que al finalizar la inspección,
+                        recibo el vehículo identificado con la placa <strong><span id="contratoPlaca"></span></strong>,
+                        en las mismas condiciones generales en las que fue entregado al ingreso.
+                    </p>
+
+                    <p>
+                        Manifiesto que recibí el vehículo a conformidad, y me fue entregado por el personal de la empresa
+                        sin nínguna alteración visible durante el tiempo de permanencia en la sede del CDA.
+                    </p>
+
+                    <p>
+                        Así mismo, confirmo que tuve la oportunidad de verificar el estado general del vehículo antes de
+                        retirarlo, incluyendo sus condiciones exteriores y los elementos visibles del mismo, y que lo recibo
+                        a satisfacción.
+                    </p>
+
+                    <p>
+                        En señal de conformidad con la entrega, firmo el presente documento, dejando constancia de la
+                        recepción del vehículo en condiciones adecuadas.
+                    </p>
+                </div>
+
+                <hr>
+
+                <!-- Canvas firma -->
+                <label class="mb-2"><strong>Firma digital</strong></label>
+                <div class="border rounded p-2">
+                    <canvas id="canvasFirma" style="width:100%; height:200px; display:block;"></canvas>
+                </div>
+                <small class="text-muted">Firma con el mouse o con el dedo (si es táctil).</small>
+
+                <div class="mt-2 d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-outline-secondary" id="btnLimpiarFirma">Limpiar</button>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="aceptoContrato">
+                        <label class="form-check-label" for="aceptoContrato">
+                            He leído y acepto el documento
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Firma base64 (del canvas) -->
+                <input type="hidden" id="firmaBase64">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnFirmarYGenerar">
+                    Firmar, generar PDF y enviar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS (necesario para el modal) -->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
