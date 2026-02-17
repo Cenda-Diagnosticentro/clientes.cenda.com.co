@@ -84,6 +84,8 @@
             firmaBase64,
         });
 
+        // Descargar el PDF
+        // descargarBlob(pdfBlob, `acta_recibo_${placa}-${fecha}-${hora}.pdf`);
         window.__ACTA_PDF_BLOB__ = pdfBlob;
         window.__ACTA_FILENAME__ = `ACTA_${placa}_${new Date().toISOString().replaceAll(':','-')}.pdf`;
 
@@ -121,7 +123,7 @@
         const texto = `
 Yo, ${nombre}, declaro que al finalizar la inspección, recibo el vehículo identificado con la placa ${placa}, en las mismas condiciones generales en las que fue entregado al ingreso.
 
-Manifiesto que el vehículo me fue entregado sin daños, afectaciones, pérdidas o alteraciones visibles que puedan ser atribuibles al establecimiento o a su personal durante el tiempo de permanencia en las instalaciones.
+Manifiesto que recibí el vehículo a conformidad, y me fue entregado por el personal de la empresa sin nínguna alteración visible durante el tiempo de permanencia en la sede del CDA.
 
 Así mismo, confirmo que tuve la oportunidad de verificar el estado general del vehículo antes de retirarlo, incluyendo sus condiciones exteriores y los elementos visibles del mismo, y que lo recibo a satisfacción.
 
@@ -145,6 +147,17 @@ Fecha y hora de entrega: ${fecha} ${hora}
         doc.text(`Placa: ${placa}`, 20, 223);
 
         return doc.output("blob");
+    }
+
+    function descargarBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
     }
 
     function blobToBase64(blob) {
