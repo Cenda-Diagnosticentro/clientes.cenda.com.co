@@ -60,13 +60,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const url = config.getServiceUrl('funcionariosService') + '/api/v1/encuesta/save';
 
+        const pdfBlob = window.__ACTA_PDF_BLOB__;
+        if (!pdfBlob) {
+            Swal.fire("Falta el acta", "Debes firmar y generar el acta antes de enviar.", "warning");
+            return;
+        }
+
+        const formData = new FormData();
+
+        formData.append("encuesta", new Blob([JSON.stringify(datos)], { type: "application/json" }));
+        formData.append("acta", pdfBlob, window.__ACTA_FILENAME__ || "acta.pdf");
+
         fetch(url, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": token
             },
-            body: JSON.stringify(datos)
+            body: formData
         })
             .then(res => {
                 if (res.status === 401) throw new Error("No autorizado. Verifica tu sesión.");
