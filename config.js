@@ -6,8 +6,8 @@ window.config = {
         // informesService: 'https://api-informes-rtm-production.up.railway.app', // Base URL de control de certificados de RTM
         // funcionariosService: 'https://api-funcionarios-admin-migracion-production.up.railway.app', // Base URL de funcionarios y gestión
 
-        funcionariosService:  'https://bandwidth-pockets-anatomy-informed.trycloudflare.com',
-        informesService: 'https://api-informes-rtm-production.up.railway.app',
+        funcionariosService:  'https://api.cendadesarrollo.com',
+        // informesService: 'https://api-informes-rtm-production.up.railway.app',
     },
 
     getServiceUrl: function (serviceName) {
